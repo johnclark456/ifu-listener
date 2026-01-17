@@ -1,0 +1,8 @@
+listener-app/DataCubes/NGC7319_nucleus_MIRI_MRS
+listener-app/__pycache__
+listener-app/static/audio
+listener-app/static/images/whitelight.png
+listener-app/static/intspec.csv
+listener-app/static/pixcols.csv
+listener-app/static/spec.csv
+listener-app/static/wlens.csv
