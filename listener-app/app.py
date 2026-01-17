@@ -31,14 +31,18 @@ def index():
     form = UploadForm()
     minwl = form.data["minwl"]
     maxwl = form.data["maxwl"]
-    minx = form.data["minx"]
-    maxx = form.data["maxx"]
-    miny = form.data["miny"]
-    maxy = form.data["maxy"]
-    nspaxel = sum(1 for _ in open("static/pixcols.csv"))
+    minx = form.data["minx"] or 0
+    maxx = form.data["maxx"] or 100
+    miny = form.data["miny"] or 0
+    maxy = form.data["maxy"] or 100
+    errors = False
+    has_data = os.path.isfile("static/pixcols.csv")
+    if has_data:
+        nspaxel = sum(1 for _ in open("static/pixcols.csv"))
+    else:
+        nspaxel = 1
     nside = math.isqrt(nspaxel)
     metadata = {"nside": nside, "ppix": 400 // nside}
-    errors = False
 
     ## On 'Generate Audio Files':
     ## Check if new file selected, or previous filename has been saved
@@ -86,7 +90,9 @@ def index():
                 fname = fname[fname.rindex("/") + 1 :]
     except IOError:
         fname = ""
-    return render_template("index.html", form=form, metadata=metadata, fname=fname)
+    return render_template(
+        "index.html", form=form, metadata=metadata, fname=fname, has_data=has_data
+    )
 
 
 if __name__ == "__main__":

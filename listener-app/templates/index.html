@@ -1,120 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Grid of Audio Files</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script type="text/javascript">
-      var nside = parseInt({{ metadata.nside }});
-      var ppix = parseInt({{ metadata.ppix }});
-      var vfmargin_x = parseInt({{ metadata.vfmargin_x}});
-      var vfmargin_y = parseInt({{ metadata.vfmargin_y}});
-    </script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
-</head>
-   
-<body>
-    <audio id="in-sound">
-      <source src="{{ url_for('static', filename='stock_sounds/in.mp3') }}">
-    </audio>
-    <audio id="out-sound">
-      <source src="{{ url_for('static', filename='stock_sounds/out.mp3') }}">
-    </audio>
-    <audio id="oob-sound">
-      <source src="{{ url_for('static', filename='stock_sounds/oob.mp3') }}">
-    </audio>
 
-    <div class="wrapper">
-      <div class="grid">
-        <h1> Hyperspectral listener :: Powered by <a href="https://www.audiouniverse.org/research/strauss" target="_blank">STRAUSS</a></h1>
-      
-        <div class="sidebar">
-          <p>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grid of Audio Files</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="text/javascript">
+    var nside = parseInt({{metadata.nside}});
+    var ppix = parseInt({{metadata.ppix}});
+    var vfmargin_x = parseInt({{metadata.vfmargin_x}});
+    var vfmargin_y = parseInt({{metadata.vfmargin_y}});
+  </script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+</head>
+
+<body>
+  <audio id="in-sound">
+    <source src="{{ url_for('static', filename='stock_sounds/in.mp3') }}">
+  </audio>
+  <audio id="out-sound">
+    <source src="{{ url_for('static', filename='stock_sounds/out.mp3') }}">
+  </audio>
+  <audio id="oob-sound">
+    <source src="{{ url_for('static', filename='stock_sounds/oob.mp3') }}">
+  </audio>
+
+  <div class="wrapper">
+    <div class="grid">
+      <h1> Hyperspectral listener :: Powered by <a href="https://www.audiouniverse.org/research/strauss"
+          target="_blank">STRAUSS</a></h1>
+
+      <div class="sidebar">
+        <p>
           <br /><br /><br />
           <button class="helper-switch"> Turn Off Helper Sounds </button> <br />
           <button class="dark-mode">Use Dark Mode</button> <br />
           <button class="switch-axis"> Use Log Y Scale </button> <br />
-          
-          <button  class="show-new" onclick="toggle_display();delete_flash(this)">Select New</button>
-          <div class="generate" style="display:none">
-            <form method="post" enctype="multipart/form-data">
-                {{ form.hidden_tag() }}
-                {{ form.file }}
-                <br />
-                {{ form.minwl.label }}
-                {{ form.minwl(style='width: 60px; font-size: 16px;') }}
-                <br />
-                {{ form.maxwl.label }}
-                {{ form.maxwl(style='width: 60px; font-size: 16px;') }}
-                <br />
-                {{ form.minx.label }}
-                {{ form.minx(style='width: 60px; font-size: 16px;', id="thb_left") }}
-                {{ form.maxx.label }}
-                {{ form.maxx(style='width: 60px; font-size: 16px;', id="thb_right") }}
-                <br />
-                {{ form.miny.label }}
-                {{ form.miny(style='width: 60px; font-size: 16px;', id="thb_top") }}
-                {{ form.maxy.label }}
-                {{ form.maxy(style='width: 60px; font-size: 16px;', id="thb_bottom") }}
-                <br /><br />
-                <button type="submit" value="Submit" onclick="$('#loading').show()"">Generate Audio Files</button> 
+
+          <button class="show-new" onclick="toggle_display();delete_flash(this)">Select New</button>
+        <div class="generate" style="display:none">
+          <form method="post" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            {{ form.file }}
+            <br />
+            {{ form.minwl.label }}
+            {{ form.minwl(style='width: 60px; font-size: 16px;') }}
+            <br />
+            {{ form.maxwl.label }}
+            {{ form.maxwl(style='width: 60px; font-size: 16px;') }}
+            <br />
+            {{ form.minx.label }}
+            {{ form.minx(style='width: 60px; font-size: 16px;', id="thb_left") }}
+            {{ form.maxx.label }}
+            {{ form.maxx(style='width: 60px; font-size: 16px;', id="thb_right") }}
+            <br />
+            {{ form.miny.label }}
+            {{ form.miny(style='width: 60px; font-size: 16px;', id="thb_top") }}
+            {{ form.maxy.label }}
+            {{ form.maxy(style='width: 60px; font-size: 16px;', id="thb_bottom") }}
+            <br /><br />
+            <button type="submit" value="Submit" onclick="$('#loading').show()"">Generate Audio Files</button> 
                 <br />
             </form>
           </div>
-          <div class="messages">
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            <p class=flashes style="font-weight:bold">
-              {% for message in messages %}
-              {{ message }}
-              {% endfor %}
-            </p>
-            {% endif %}
-            {% endwith %}
-          </div>
-          <div class="creating">
-            <div id="loading" style="display:none;"><img src="{{ url_for('static', filename='images/loading.gif') }}" alt="" />&nbsp; Creating audio files</div>
-          </div>
-          <h3><input type="range" id="volume-slider">
-          <br>Volume</h3>
-          </p>
+          <div class=" messages">
+              {% with messages = get_flashed_messages() %}
+              {% if messages %}
+              <p class=flashes style="font-weight:bold">
+                {% for message in messages %}
+                {{ message }}
+                {% endfor %}
+              </p>
+              {% endif %}
+              {% endwith %}
         </div>
-
-
-        <div class="main">
-            <h2>Listener</h2>
-            <canvas id='mainCanvas' aria-label="2D image of datacube. Click and hold mouse to hear spectrum for each pixel." role="main">
-            </canvas>
-            <h3>{{fname}}</h2>
-            <canvas id="mainChart" aria-label="Dynamic line chart showing peak-normalised flux as a function of wavelength." role="img"></canvas>
+        <div class="creating">
+          <div id="loading" style="display:none;"><img src="{{ url_for('static', filename='images/loading.gif') }}"
+              alt="" />&nbsp; Creating audio files</div>
         </div>
-        
-
-        <div class="right">
-          <div style="width: 100%; margin: 0 auto;">
-            <h2>Viewfinder</h2>
-            
-            <img id="fullDatacube" src="../static/images/whitelight.png"
-                class="card-img-top" alt="2D image of full datacube"
-                style="position:relative;" aria-label="2D image of full datacube. Move the corners of the overlaid rectangle to select a smaller region." role="img">
-            <canvas id="imageCanvas" 
-		    style="position:absolute; left: 0px; top: 0px">
-            </canvas>
-            <br /><br /><br />
-
-            <canvas id="integratedChart" aria-label="Line chart showing integrated spectrum for datacube: peak-normalised flux as a function of wavelength." role="img"></canvas>
-          </div>
-        </div>
-        
-        
+        <h3><input type="range" id="volume-slider">
+          <br>Volume
+        </h3>
+        </p>
       </div>
+
+      {% if has_data %}
+      <div class="main">
+        <h2>Listener</h2>
+        <canvas id='mainCanvas' aria-label="2D image of datacube. Click and hold mouse to hear spectrum for each pixel."
+          role="main">
+        </canvas>
+        <h3>{{ fname }}</h3>
+        <canvas id="mainChart" aria-label="Dynamic line chart showing peak-normalised flux as a function of wavelength."
+          role="img">
+        </canvas>
+      </div>
+
+      <div class="right">
+        <div style="width: 100%; margin: 0 auto;">
+          <h2>Viewfinder</h2>
+
+          <img id="fullDatacube" src="../static/images/whitelight.png" class="card-img-top"
+            alt="2D image of full datacube" style="position:relative;"
+            aria-label="2D image of full datacube. Move the corners of the overlaid rectangle to select a smaller region."
+            role="img">
+          <canvas id="imageCanvas" style="position:absolute; left: 0px; top: 0px">
+          </canvas>
+          <br /><br /><br />
+
+          <canvas id="integratedChart"
+            aria-label="Line chart showing integrated spectrum for datacube: peak-normalised flux as a function of wavelength."
+            role="img"></canvas>
+        </div>
+      </div>
+
+      {% else %}
+      <div class="main no-data">
+        <h2>No data loaded</h2>
+        <p>
+          Please select a file and generate audio files to begin listening.
+        </p>
+      </div>
+      {% endif %}
+
     </div>
-    
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/viewfinder.js') }}"></script>
-    
+  </div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/viewfinder.js') }}"></script>
+
 </body>
+
 </html>
